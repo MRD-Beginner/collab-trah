@@ -56,11 +56,28 @@ class TreeController extends Controller
         return redirect()->back()->with('success', 'Data berhasil diperbarui!');
     }
 
-    public function detail($tree_id){
-        // $tree = FamilyTree::findOrFail($tree_id);
-        // return view('detail', compact('tree'));
+    // public function detail($tree_id){
+    //     // $tree = FamilyTree::findOrFail($tree_id);
+    //     // return view('detail', compact('tree'));
 
-        $tree = FamilyTree::with('familyMembers')->findOrFail($tree_id);
-        return view('detail', compact('tree'));
+    //     $tree = FamilyTree::with('familyMembers')->findOrFail($tree_id);
+    //     return view('detail', compact('tree'));
+
+        
+    // }
+
+    public function detail($tree_id)
+    {
+        // Cari tree berdasarkan ID dengan eager loading untuk familyMembers
+        $tree = FamilyTree::with(['familyMembers' => function ($query) {
+            $query->whereNull('parent_id')->with('children');
+        }])->findOrFail($tree_id);
+
+        // Ambil semua anggota keluarga yang tidak memiliki parent (root) dan terkait dengan tree_id
+        $rootMembers = $tree->familyMembers->whereNull('parent_id');
+
+        return view('detail', compact('tree', 'rootMembers'));
     }
+
+    
 }
