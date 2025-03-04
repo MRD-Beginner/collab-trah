@@ -33,6 +33,7 @@ Route::middleware([
 
     Route::delete('/family_members/{id}', [FamilyController::class, 'destroy'])->name('family_members.destroy');
 
+    Route::get('/family-tree/{id}', [FamilyController::class, 'showFamilyTree']);
 });
 
 

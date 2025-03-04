@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FamilyMember;
+use App\Models\FamilyTree;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -122,11 +123,38 @@ class FamilyController extends Controller
     return redirect()->back()->with('success', 'Data berhasil diperbarui!');
 }
 
-    
     public function destroy($id) {
         $member = FamilyMember::findOrFail($id);
         $member->delete();
     
         return redirect()->back()->with('success', 'Anggota keluarga berhasil dihapus!');
+    }
+
+    // public function showFamilyTree()
+    // {
+    //     // Ambil semua anggota keluarga yang tidak memiliki parent (root)
+    //     $rootMembers = FamilyMember::whereNull('parent_id')->with('children')->get();
+
+    //     return view('family-tree', compact('rootMembers'));
+    // }
+
+    public function showFamilyTree($tree_id)
+    {
+        // Cari tree berdasarkan ID
+        $tree = FamilyTree::find($tree_id);
+
+        // Jika tree tidak ditemukan, tampilkan error 404
+        if (!$tree) {
+            abort(404, 'Tree not found');
+        }
+
+        // Ambil semua anggota keluarga yang tidak memiliki parent (root) dan terkait dengan tree_id
+        $rootMembers = FamilyMember::where('tree_id', $tree_id)
+            ->whereNull('parent_id')
+            ->with('children')
+            ->get();
+
+        // Kirim data ke view
+        return view('family-tree', compact('rootMembers', 'tree'));
     }
 }
