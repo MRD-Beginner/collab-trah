@@ -3,14 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\FamilyTree;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TreeController extends Controller
 {
     public function index()
     {
+        $totalUsers = User::count();
+        $totalFamilyTrees = FamilyTree::count();
+        $users = User::pluck('name');
+        $familyTrees = FamilyTree::all(); 
+
+        return view('dashboard', compact('totalUsers', 'users', 'totalFamilyTrees', 'familyTrees'));
+    }
+    public function data()
+    {
         $trees = FamilyTree::all(); // Ambil semua data pohon
-        return view('dashboard', compact('trees'));
+        return view('data', compact('trees'));
     }
 
     public function store(Request $request)
@@ -56,28 +66,28 @@ class TreeController extends Controller
         return redirect()->back()->with('success', 'Data berhasil diperbarui!');
     }
 
-    // public function detail($tree_id){
-    //     // $tree = FamilyTree::findOrFail($tree_id);
-    //     // return view('detail', compact('tree'));
-
-    //     $tree = FamilyTree::with('familyMembers')->findOrFail($tree_id);
-    //     return view('detail', compact('tree'));
-
-        
-    // }
-
     public function detail($tree_id)
     {
-        // Cari tree berdasarkan ID dengan eager loading untuk familyMembers
-        $tree = FamilyTree::with(['familyMembers' => function ($query) {
-            $query->whereNull('parent_id')->with('children');
-        }])->findOrFail($tree_id);
+        // Ambil tree beserta familyMembers dan children
+        $tree = FamilyTree::with('familyMembers.children')->findOrFail($tree_id);
 
-        // Ambil semua anggota keluarga yang tidak memiliki parent (root) dan terkait dengan tree_id
+        // Ambil root members (familyMembers tanpa parent_id)
         $rootMembers = $tree->familyMembers->whereNull('parent_id');
 
         return view('detail', compact('tree', 'rootMembers'));
     }
+    // public function detail($tree_id)
+    // {
+    //     // Cari tree berdasarkan ID dengan eager loading untuk familyMembers
+    //     $tree = FamilyTree::with(['familyMembers' => function ($query) {
+    //         $query->whereNull('parent_id')->with('children');
+    //     }])->findOrFail($tree_id);
+
+    //     // Ambil semua anggota keluarga yang tidak memiliki parent (root) dan terkait dengan tree_id
+    //     $rootMembers = $tree->familyMembers->whereNull('parent_id');
+
+    //     return view('detail', compact('tree', 'rootMembers'));
+    // }
 
     
 }

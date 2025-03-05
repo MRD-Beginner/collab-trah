@@ -13,10 +13,9 @@
             box-sizing: border-box;
         }
         body {
-            height: 100vh;
-            display: grid;
             align-items: center;
             font-family: 'Poppins', sans-serif;
+            overflow: visible;
         }
         .tree {
             width: 100%;
