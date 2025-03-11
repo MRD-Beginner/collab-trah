@@ -75,7 +75,7 @@ class TreeController extends Controller
         // Ambil root members (familyMembers tanpa parent_id)
         $rootMembers = $tree->familyMembers->whereNull('parent_id');
 
-        return view('detail', compact('tree', 'rootMembers'));
+        return view('admin.detail', compact('tree', 'rootMembers'));
     }
     // public function detail($tree_id)
     // {
