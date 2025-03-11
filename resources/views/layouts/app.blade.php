@@ -17,9 +17,9 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-
         <!-- Styles -->
         @livewireStyles
+        {{-- @notifyCss --}}
     </head>
     <body class="font-sans antialiased">
         <x-banner />
@@ -42,8 +42,8 @@
             </main>
         </div>
 
+        @notifyJs
         @stack('modals')
-
         @livewireScripts
     </body>
 </html>

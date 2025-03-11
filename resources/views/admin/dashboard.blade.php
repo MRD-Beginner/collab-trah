@@ -1,19 +1,51 @@
 <x-app-layout>
+
+    <style>
+        .border-start-primary {
+            border-left: 4px solid #00b067 !important; /* Warna Primary Bootstrap */
+            border-top: none !important;
+            border-right: none !important;
+            border-bottom: none !important;
+        }
+        .border-start-secondary {
+            border-left: 4px solid #FFD700 !important; /* Warna Primary Bootstrap */
+            border-top: none !important;
+            border-right: none !important;
+            border-bottom: none !important;
+        }
+        .border-start-tertiary {
+            border-left: 4px solid #0077C8 !important; /* Warna Primary Bootstrap */
+            border-top: none !important;
+            border-right: none !important;
+            border-bottom: none !important;
+        }
+        
+    </style>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight sm:mx-5 md:mx-0">
             {{ __('Dashboard Admin') }}
         </h2>
     </x-slot>
+    
+    <x-notify::notify />
 
-    <div class="container mt-10">
-        <div class="row">
+    <div class="container-fluid p-0 h-5">
+        <img src="{{ asset('img/wayang-bg.png') }}" alt="Wayang Background" class="img-fluid" style="width: 100%; height: 5.5rem; object-fit: cover; filter: brightness(80%);">
+    </div>
+    
+
+    <div class="container-fluid my-3">
+        <div class="row d-flex justify-center gap-x-16">
             <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card border-start-primary shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-md font-weight-bold text-primary text-capitalize mb-1">
-                                    Total User</div>
+                                <div class="text-success text-capitalize mb-1">
+                                    <h2 class="fw-semibold fs-5">
+                                        Total User
+                                    </h2>
+                                </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalUsers }} User</div>
                             </div>
                             <div class="col-auto">
@@ -26,14 +58,16 @@
                 </div>
             </div>
 
-            <!-- Earnings (Monthly) Card Example -->
             <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
+                <div class="card border-start-secondary shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Jumlah Silsilah Keluarga</div>
+                                <div class="text-warning text-capitalize mb-1">
+                                    <h2 class="fw-semibold fs-6">
+                                        Jumlah Silsilah Keluarga
+                                    </h2>
+                                </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalFamilyTrees }} Family Tree</div>
                             </div>
                             <div class="col-auto">
@@ -46,13 +80,15 @@
                 </div>
             </div>
 
-            <!-- Earnings (Monthly) Card Example -->
             <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-info shadow h-100 py-2">
+                <div class="card border-start-tertiary shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks
+                                <div class="text-primary text-capitalize mb-1">
+                                    <h2 class="fw-semibold fs-6">
+                                        Jumlah Silsilah Keluarga
+                                    </h2>
                                 </div>
                                 <div class="row no-gutters align-items-center">
                                     <div class="col-auto">
@@ -75,27 +111,15 @@
                 </div>
             </div>
 
-            <!-- Pending Requests Card Example -->
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-warning shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Pending Requests</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-comments fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
-    <h1>
+    <div class="container-fluid md:my-3 d-flex justify-content-center">
+        <input type="text" class="form-input rounded-lg border-green-700 col-sm-12 col-md-10 ">
+    </div>
+    
+    
+    {{-- <h1>
         Jumlah User: {{ $totalUsers }}
     </h1>
 
@@ -123,7 +147,7 @@
                 <h2>{{ $familyTree->tree_name }}</h2>
             @endforeach
         @endif
-    </div>
+    </div> --}}
 </x-app-layout>
 
 

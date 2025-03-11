@@ -15,12 +15,13 @@ class TreeController extends Controller
         $users = User::pluck('name');
         $familyTrees = FamilyTree::all(); 
 
-        return view('dashboard', compact('totalUsers', 'users', 'totalFamilyTrees', 'familyTrees'));
+        notify()->success('Hello Admin');
+        return view('admin.dashboard', compact('totalUsers', 'users', 'totalFamilyTrees', 'familyTrees'));
     }
     public function data()
     {
         $trees = FamilyTree::all(); // Ambil semua data pohon
-        return view('data', compact('trees'));
+        return view('admin.data', compact('trees'));
     }
 
     public function store(Request $request)
