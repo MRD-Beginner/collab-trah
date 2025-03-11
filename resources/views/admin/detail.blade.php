@@ -18,9 +18,11 @@
             overflow: visible;
         }
         .tree {
-            width: 100%;
             height: auto;
             text-align: center;
+            overflow-x: auto;
+            white-space: nowrap; /* Mencegah konten untuk turun ke baris berikutnya */
+            width: 100%;
         }
         .tree ul {
             padding-top: 20px;
@@ -79,7 +81,8 @@
             height: 20px;
         }
         .tree li a {
-            border: 1px solid #ccc;
+            background: whitesmoke;
+            border: 1px solid #00963c;
             padding: 10px;
             display: inline-grid;
             border-radius: 5px;
@@ -100,7 +103,7 @@
             color: #666;
             padding: 8px;
             font-size: 12px;
-            text-transform: uppercase;
+            text-transform: capitalize;
             letter-spacing: 1px;
             font-weight: 500;
         }
@@ -114,10 +117,44 @@
             border-color: #94a0b4;
         }
 
+        .nav-link {
+            color: #000; /* Warna teks default */
+            background-color: transparent; /* Latar belakang default */
+        }
+        
+        .active{
+            background: transparent !important ;
+            color: green !important ;
+            font-weight: 800 !important;
+            text-decoration: none !important;
+        }
+
+       .nav-link:hover {
+            color: #007bff; /* Warna teks ketika hover */
+            background-color: rgba(0, 123, 255, 0.1); /* Latar belakang ketika hover */
+        }
+        table{
+            color: #000;
+            font-weight: 200;
+        }
+
+        .wrap-text {
+            white-space: normal; 
+            word-wrap: break-word;
+            max-width: 200px; 
+        }
+
+        .container {
+            max-width: 100%; 
+            overflow: hidden; 
+            padding: 16px; 
+        }
        
     </style>
 
-    
+    @if(session('success'))
+        <x-notify::notify />
+    @endif
 
     <div class="flex mt-10">
         <div class="container sm:mx-12 md:mx-28">
@@ -196,24 +233,14 @@
 
             <div class="overflow-x-auto mt-3 bg-[#FEEEBD] p-5 rounded-md">
                 <ul class="nav nav-tabs bg-[#FFE594]" id="myTab" role="tablist">
-                    {{-- <li class="nav-item my-2 " role="presentation">
-                    <button class="btn btn-link rounded-none border-1 border-e-black active:text-yellow-800" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Anggota Keluarga</button>
-                    </li>
-                    <li class="nav-item my-2" role="presentation">
-                    <button class="btn btn-link rounded-none border-1 border-e-black " id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Pohon Keluarga</button>
-                    </li>
-                    <li class="nav-item my-2" role="presentation">
-                    <button class="btn btn-link rounded-none border-1 border-e-black" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Hubungan Keluarga</button>
-                    </li> --}}
-
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Home</button>
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Anggota Keluarga</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Profile</button>
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Pohon Keluarga</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Contact</button>
+                        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Hubungan Keluarga</button>
                     </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
@@ -225,7 +252,7 @@
                                 <th class="py-3 px-20 text-center text-white border border-orange-300">Nama Lengkap</th>
                                 <th class="py-3 px-12 text-center text-white border border-orange-300">Tanggal Lahir</th>
                                 <th class="py-3 px-12 text-center text-white border border-orange-300">Jenis Kelamin</th>
-                                <th class="py-3 px-4 text-center text-white border border-orange-300">Alamat</th>
+                                <th class="py-3 px-4 text-center text-white border border-orange-300 ">Alamat</th>
                                 <th class="py-3 px-4 text-center text-white border border-orange-300">Orang tua</th>
                                 <th class="py-3 px-4 text-center text-white border border-orange-300">Aksi</th>
                             </tr>
@@ -233,10 +260,10 @@
                             @foreach ($tree->familyMembers as $member)
                             <tr class="border-separate border border-[#CFAD82] bg-[#FFE28B] justify-center align-middle">
                                 <td class="py-3 px-4 text-center border border-[#CFAD82]">{{ $loop -> iteration }}</td>
-                                <td class="py-3 px-4 border border-[#CFAD82] text-center">{{$member->name}}</td>
+                                <td class="py-3 px-4 border border-[#CFAD82] text-center wrap-text">{{$member->name}}</td>
                                 <td class="py-3 px-4 border border-[#CFAD82] text-center">{{ $member->birth_date }}</td>
                                 <td class="py-3 px-4 border border-[#CFAD82] text-center">{{ $member->gender }}</td>
-                                <td class="py-3 px-4 border border-[#CFAD82] text-center">{{ $member->address }}</td>
+                                <td class="py-3 px-4 border border-[#CFAD82] text-center wrap-text">{{ $member->address }}</td>
                                 <td class="py-3 px-4 border border-[#CFAD82] text-center ">{{ $member->parent ? $member->parent->name : 'Tidak Ada' }}</td>
                                 <td class="py-3 px-8 border border-[#CFAD82] flex gap-3">
         
@@ -387,9 +414,9 @@
                         </table>
                     </div>
                     <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-                        <div class="container">
-                            <div class="row">
-                                <h1>Family Tree: {{ $tree->name }}</h1>
+                        <div class="container flex-wrap overflow-hidden">
+                            <div class="row justify-center">
+                                <h1 class="fw-bold" style="color: #000 !important; text-transform: capitalize;">{{ $tree->tree_name }}</h1>
                                 <div class="tree">
                                     <ul>
                                         @foreach ($rootMembers as $member)
@@ -404,42 +431,6 @@
                         tab 3
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="row">
-            <div class="tree">
-                {{-- @foreach ($tree->familyMembers as $member)
-                <ul>
-                    <li> 
-                        <a href="#"><img src="images/1.jpg">
-                            <span>Child</span>
-                        </a>
-                        <ul>
-                            <li>
-                                <a href="#"><img src="images/1.jpg">
-                                    <span>Child Child</span>
-                                </a>
-                                <ul>
-                                    <li><a href="#"><img src="images/1.jpg">
-                                        <span>Child</span>
-                                    </a></li>
-                                    <li><a href="#"><img src="images/1.jpg">
-                                        <span>Child</span>
-                                    </a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li> 
-                        <a href="#"><img src="images/1.jpg">
-                            <span>Child</span>
-                        </a>
-                    </li>
-                </ul>
-                @endforeach --}}
             </div>
         </div>
     </div>

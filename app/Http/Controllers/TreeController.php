@@ -15,7 +15,7 @@ class TreeController extends Controller
         $users = User::pluck('name');
         $familyTrees = FamilyTree::all(); 
 
-        notify()->success('Hello Admin');
+        notify()->success('Welcome Back Admin', 'Hello 😎');
         return view('admin.dashboard', compact('totalUsers', 'users', 'totalFamilyTrees', 'familyTrees'));
     }
     public function data()
@@ -26,20 +26,18 @@ class TreeController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi data
         $request->validate([
             'tree_name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 
-        // Simpan ke database
-        FamilyTree::create([
+        $tree = FamilyTree::create([
             'tree_name' => $request->tree_name,
             'description' => $request->description,
         ]);
 
-        // Redirect dengan pesan sukses
-        return redirect()->back()->with('success', 'Data berhasil disimpan!');
+        notify()->success('Data Berhasil Ditambahkan');
+        return redirect()->route('data', ['id' => $tree->id]);
     }
 
     public function edit($tree_id)
@@ -52,8 +50,8 @@ class TreeController extends Controller
     {
         $tree = FamilyTree::findOrFail($tree_id);
         $tree->delete();
-
-        return redirect()->back()->with('success', 'Data berhasil dihapus.');
+        notify()->success('Data Berhasil Ditambahkan');
+        return redirect()->back()->with('success');
     }
 
     public function update(Request $request, $tree_id)
@@ -63,32 +61,17 @@ class TreeController extends Controller
             'tree_name' => $request->tree_name,
             'description' => $request->description,
         ]);
-
-        return redirect()->back()->with('success', 'Data berhasil diperbarui!');
+        notify()->success('Data Berhasil Diupdate','Update Berhasil');
+        return redirect()->route('data');
     }
 
     public function detail($tree_id)
     {
         // Ambil tree beserta familyMembers dan children
         $tree = FamilyTree::with('familyMembers.children')->findOrFail($tree_id);
-
         // Ambil root members (familyMembers tanpa parent_id)
         $rootMembers = $tree->familyMembers->whereNull('parent_id');
-
         return view('admin.detail', compact('tree', 'rootMembers'));
     }
-    // public function detail($tree_id)
-    // {
-    //     // Cari tree berdasarkan ID dengan eager loading untuk familyMembers
-    //     $tree = FamilyTree::with(['familyMembers' => function ($query) {
-    //         $query->whereNull('parent_id')->with('children');
-    //     }])->findOrFail($tree_id);
-
-    //     // Ambil semua anggota keluarga yang tidak memiliki parent (root) dan terkait dengan tree_id
-    //     $rootMembers = $tree->familyMembers->whereNull('parent_id');
-
-    //     return view('detail', compact('tree', 'rootMembers'));
-    // }
-
     
 }

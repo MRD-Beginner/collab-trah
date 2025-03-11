@@ -5,7 +5,8 @@
         </h2>
     </x-slot>
 
-    <!-- component -->
+    <x-notify::notify />
+
     <div class="flex mt-10">
         <div class="container sm:mx-12 md:mx-28">
             <button data-bs-toggle="modal" data-bs-target="#AddModal" class="bg-[#D54425] text-white px-4 py-2 rounded-md hover:bg-[#971c00] ms15">Tambah</button>
