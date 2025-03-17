@@ -72,11 +72,9 @@ class FamilyController extends Controller
             'parent_id' => $request->parent_id,
             'photo' => $photoPath, // Simpan path foto ke database
         ]);
-
+        notify()->success('Data Berhasil Ditambahkan','Data Added ');
         return redirect()->back()->with('success', 'Data berhasil disimpan!');
     }
-
-    
 
     public function edit($id) {
         $member = FamilyMember::findOrFail($id);
@@ -119,7 +117,7 @@ class FamilyController extends Controller
         'parent_id' => $request->parent_id,
         'photo' => $photoPath, // Menyimpan path lengkap (misalnya: photos/family_photos/nama_file.jpg)
     ]);
-
+    notify()->success('Data Berhasil Diupdate','Update Data');
     return redirect()->back()->with('success', 'Data berhasil diperbarui!');
 }
 
@@ -127,16 +125,9 @@ class FamilyController extends Controller
         $member = FamilyMember::findOrFail($id);
         $member->delete();
     
+        notify()->success('Data Berhasil Dihapus', 'Delete Data');
         return redirect()->back()->with('success', 'Anggota keluarga berhasil dihapus!');
     }
-
-    // public function showFamilyTree()
-    // {
-    //     // Ambil semua anggota keluarga yang tidak memiliki parent (root)
-    //     $rootMembers = FamilyMember::whereNull('parent_id')->with('children')->get();
-
-    //     return view('family-tree', compact('rootMembers'));
-    // }
 
     public function showFamilyTree($tree_id)
     {

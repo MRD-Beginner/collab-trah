@@ -36,7 +36,7 @@ class TreeController extends Controller
             'description' => $request->description,
         ]);
 
-        notify()->success('Data Berhasil Ditambahkan');
+        notify()->success('Data Berhasil Ditambahkan','Create Data ');
         return redirect()->route('data', ['id' => $tree->id]);
     }
 
@@ -50,7 +50,7 @@ class TreeController extends Controller
     {
         $tree = FamilyTree::findOrFail($tree_id);
         $tree->delete();
-        notify()->success('Data Berhasil Ditambahkan');
+        notify()->success('Data Berhasil Dihapus', 'Delete Data');
         return redirect()->back()->with('success');
     }
 
@@ -61,7 +61,7 @@ class TreeController extends Controller
             'tree_name' => $request->tree_name,
             'description' => $request->description,
         ]);
-        notify()->success('Data Berhasil Diupdate','Update Berhasil');
+        notify()->success('Data Berhasil Diupdate','Update Data');
         return redirect()->route('data');
     }
 
@@ -73,5 +73,4 @@ class TreeController extends Controller
         $rootMembers = $tree->familyMembers->whereNull('parent_id');
         return view('admin.detail', compact('tree', 'rootMembers'));
     }
-    
 }

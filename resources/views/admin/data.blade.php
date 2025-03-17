@@ -1,9 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight sm:mx-5 md:mx-0">
-            {{ __('Dashboard Admin') }}
-        </h2>
-    </x-slot>
+    
 
     <x-notify::notify />
 
@@ -160,17 +156,16 @@
             </div>
         </div>
     </div>
+    
 
     <script>
         function copyToClipboard(id) {
-            // URL yang akan disalin
             let url = `http://127.0.0.1:8000/detail/${id}`;
     
-            // Menyalin ke clipboard
             navigator.clipboard.writeText(url).then(() => {
-                alert("Link berhasil disalin: " + url);
+                Notify.success("Link berhasil disalin!");
             }).catch(err => {
-                console.error('Gagal menyalin:', err);
+                Notify.error("Gagal menyalin link.");
             });
         }
     </script>

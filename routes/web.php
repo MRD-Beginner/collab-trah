@@ -39,6 +39,8 @@ Route::middleware([
     Route::delete('/family_members/{id}', [FamilyController::class, 'destroy'])->name('family_members.destroy');
 
     Route::get('/family-tree/{id}', [FamilyController::class, 'showFamilyTree']);
+
+    Route::get('/copy-url/{tree_id}', [FamilyController::class, 'copyToClipboard'])->name('copy.url');
 });
 
 
