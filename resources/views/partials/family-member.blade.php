@@ -1,5 +1,6 @@
 <li>
     <a href="#">
+        <div class="absolute">{{ $member->urutan }}</div>
         @if ($member->photo)
         <div class="d-flex"> 
             <img src="{{ asset('storage/' . $member->photo) }}" alt="Foto Anggota" 
@@ -32,7 +33,7 @@
     @if ($member->children->count() > 0)
         <ul>
             {{-- Sort children by birth_date before rendering --}}
-            @foreach ($member->children->sortBy('birth_date') as $child)
+            @foreach ($member->children->sortBy('urutan') as $child)
                 @include('partials.family-member', ['member' => $child])
             @endforeach
         </ul>

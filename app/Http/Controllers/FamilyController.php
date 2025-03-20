@@ -22,6 +22,7 @@ class FamilyController extends Controller
             'address' => 'nullable|string|max:60',
             'parent_id' => 'nullable|exists:family_members,id',
             'photo' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'urutan' => 'required|integer',
             // Validasi untuk partner (hanya jika checkbox dicentang)
             'partner_name' => $request->has('has-partner-checkbox') ? 'required|string|max:50' : 'nullable',
             'partner_birth_date' => $request->has('has-partner-checkbox') ? 'required|date' : 'nullable',
@@ -57,6 +58,7 @@ class FamilyController extends Controller
             'address' => $request->address,
             'parent_id' => $request->parent_id,
             'photo' => $photoPath,
+            'urutan' => $request->urutan,
             'partner_name' => $request->has('has-partner-checkbox') ? $request->partner_name : null,
             'partner_birth_date' => $request->has('has-partner-checkbox') ? $request->partner_birth_date : null,
             'partner_gender' => $partnerGender, // Diisi otomatis
@@ -118,6 +120,7 @@ class FamilyController extends Controller
             'gender' => 'required|string|in:Laki-Laki,Perempuan',
             'address' => 'nullable|string|max:100',
             'photo' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'urutan' => 'required|integer',
             'partner_name' => $request->has('has-partner-checkbox') ? 'required|string|max:50' : 'nullable',
             'partner_birth_date' => $request->has('has-partner-checkbox') ? 'required|date' : 'nullable',
             'partner_gender' => $request->has('has-partner-checkbox') ? 'required|string|in:Laki-Laki,Perempuan' : 'nullable',
@@ -159,6 +162,7 @@ class FamilyController extends Controller
             'address' => $request->address,
             'parent_id' => $request->parent_id,
             'photo' => $photoPath,
+            'urutan' => $request->urutan,
             'partner_name' => $request->has('has-partner-checkbox') ? $request->partner_name : null,
             'partner_birth_date' => $request->has('has-partner-checkbox') ? $request->partner_birth_date : null,
             'partner_gender' => $request->has('has-partner-checkbox') ? $request->partner_gender : null,

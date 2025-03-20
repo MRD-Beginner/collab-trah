@@ -21,6 +21,7 @@ class FamilyMember extends Model
         'tree_id',
         'parent_id',
         'photo',
+        'urutan',
         // [partner]
         'partner_name', 
         'partner_birth_date', 

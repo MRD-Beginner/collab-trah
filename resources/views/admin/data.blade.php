@@ -1,23 +1,6 @@
 <x-app-layout>
     <x-notify::notify />
 
-    {{-- <style>
-        thead{
-                    background-color: #212529;
-                }
-
-                table tbody tr td {
-                    font-size: 14px;
-                    line-height: 16px;
-                    background-color: #f2f2f2;
-                }
-
-                table thead tr th {
-                    font-size: 16px;
-                    line-height: 16px;
-                }
-    </style> --}}
-
     <div class="flex mt-10">
         <div class="container sm:mx-12 md:mx-28">
             <button data-bs-toggle="modal" data-bs-target="#AddModal" class="bg-[#28a745] text-white px-3 py-2 rounded-md hover:bg-[#971c00] ms15">+ Tambah</button>

@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->string('name');
             $table->date('birth_date')->nullable();
             $table->enum('gender', ['Laki-Laki', 'Perempuan']);
+            $table->integer('urutan');
             $table->string('address')->nullable();
             $table->unsignedBigInteger('tree_id');
             $table->unsignedBigInteger('parent_id')->nullable(); // Tambahkan parent_id
