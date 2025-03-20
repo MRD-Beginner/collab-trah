@@ -14,18 +14,23 @@ class TreeController extends Controller
         $totalFamilyTrees = FamilyTree::count();
         $users = User::pluck('name');
         $familyTrees = FamilyTree::all(); 
+        $namaUser = auth()->user()->name; // Ambil nama user yang sedang login
 
         notify()->success('Welcome Back Admin', 'Hello 😎');
-        return view('admin.dashboard', compact('totalUsers', 'users', 'totalFamilyTrees', 'familyTrees'));
+        
+        // Tambahkan $namaUser ke dalam compact
+        return view('admin.dashboard', compact('totalUsers', 'users', 'totalFamilyTrees', 'familyTrees', 'namaUser'));
     }
     public function data()
     {
         $trees = FamilyTree::all(); // Ambil semua data pohon
-        return view('admin.data', compact('trees'));
+        $namaUser = auth()->user()->name;
+        return view('admin.data', compact('trees', 'namaUser'));
     }
 
     public function store(Request $request)
     {
+        $namaUser = auth()->user()->name;
         $request->validate([
             'tree_name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -34,6 +39,7 @@ class TreeController extends Controller
         $tree = FamilyTree::create([
             'tree_name' => $request->tree_name,
             'description' => $request->description,
+            'created_by' => $namaUser,
         ]);
 
         notify()->success('Data Berhasil Ditambahkan','Create Data ');

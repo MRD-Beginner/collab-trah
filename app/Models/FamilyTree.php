@@ -11,7 +11,7 @@ class FamilyTree extends Model
 
     protected $table = 'trees';
 
-    protected $fillable = ['tree_name', 'description'];
+    protected $fillable = ['tree_name', 'description', 'created_by'];
 
     public function familyMembers()
     {

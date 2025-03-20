@@ -8,9 +8,10 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('trees', function (Blueprint $table) {
-            $table->id(); // Laravel otomatis menggunakan "id" sebagai primary key
+            $table->id();
             $table->string('tree_name');
             $table->text('description')->nullable();
+            $table->text('created_by');
             $table->timestamps();
         });
     }

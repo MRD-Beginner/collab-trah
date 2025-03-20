@@ -149,6 +149,22 @@
             overflow: hidden; 
             padding: 16px; 
         }
+
+        #tab2-nav-item {
+        display: none; /* Sembunyikan tab navigation secara default */
+        }
+
+        #tab2 {
+            visibility: hidden; /* Sembunyikan konten Tab 2 tanpa memengaruhi tata letak */
+            height: 0; /* Hilangkan tinggi */
+            overflow: hidden; /* Pastikan konten tidak meluber */
+            transition: visibility 0.3s, height 0.3s; /* Animasi transisi */
+        }
+
+        #tab2.active {
+            visibility: visible; /* Tampilkan konten Tab 2 */
+            height: auto; /* Kembalikan tinggi ke ukuran asli */
+        }
        
     </style>
 
@@ -156,32 +172,46 @@
         <x-notify::notify />
     @endif
 
+    
+
     <div class="flex mt-10">
         <div class="container sm:mx-12 md:mx-28">
-            <button data-bs-toggle="modal" data-bs-target="#AddModal" class="bg-[#D54425] text-white px-4 py-2 rounded-md hover:bg-[#971c00] ms15">Tambah</button>
+            {{-- Button Add --}}
+            <button data-bs-toggle="modal" data-bs-target="#AddModal" class="bg-[#28a745] text-white px-3 py-2 rounded-md hover:bg-[#971c00] ms15">Tambah</button>
 
-            <div class="modal fade" id="AddModal" tabindex="-1" aria-labelledby="AddModalLabel" aria-hidden="true">
+            {{-- Modal Input --}}
+            <div class="modal fade" id="AddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Tambah Data</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Form untuk Simpan ke Laravel -->
-                            <form action="{{ route('family.store') }}" method="POST" enctype="multipart/form-data">
-                                @csrf <!-- Token keamanan Laravel -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Data Anggota Keluarga</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Data Pribadi</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Data Pasangan</button>
+                            </li>
+                        </ul>
+                        <form action="{{ route('family.store') }}" method="POST" enctype="multipart/form-data" class="mt-3">
+                            @csrf
+                            <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+                                {{-- form data diri pribadi --}}
                                 <input type="hidden" class="form-control" id="tree_id" name="tree_id" value="{{ $tree->id }}" required>
-                                
+                                                
                                 <div class="mb-3">
                                     <label for="name" class="form-label">Nama</label>
                                     <input type="text" class="form-control" id="name" name="name" required>
                                 </div>
-
+                
                                 <div class="mb-3">
                                     <label for="parent_id" class="form-label">Pilih Orang Tua</label>
                                     <select class="form-control" id="parent_id" name="parent_id">
-                                        <option value="" selected>Tidak Ada</option>
+                                        <option value="" selected>Belum Diketahui</option>
                                         @foreach ($tree->familyMembers as $member)
                                             <option value="{{ $member->id }}" {{ isset($familyMember) && $familyMember->parent_id == $member->id ? 'selected' : '' }}>
                                                 {{ $member->name }}
@@ -189,12 +219,37 @@
                                         @endforeach
                                     </select>
                                 </div>
-
+                
+                                <div class="mb-3"> 
+                                    <div class="flex items-center mb-4">
+                                        <input id="has-partner-checkbox" name="has-partner-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500" onchange="toggleTab2()">
+                                        <label for="has-partner-checkbox" class="ms-2 text-sm font-normal">Memiliki Pasangan</label>
+                                    </div>
+                                </div>
+                                
+                
+                                <div class="mb-3">
+                                    <label for="urutan" class="form-label">Anak Ke</label>
+                                    <select class="form-select" id="urutan" name="urutan" required>
+                                        <option value="" disabled selected>Anak Ke</option>
+                                        <option value="1">Pertama</option>
+                                        <option value="2">Kedua</option>
+                                        <option value="3">Ketiga</option>
+                                        <option value="4">Keempat</option>
+                                        <option value="5">Kelima</option>
+                                        <option value="6">Keenam</option>
+                                        <option value="7">Ketujuh</option>
+                                        <option value="8">Kedelapan</option>
+                                        <option value="9">Kesembilan</option>
+                                        <option value="10">Kesepuluh</option>
+                                    </select>
+                                </div>
+                
                                 <div class="mb-3"> 
                                     <label for="birth_date" class="form-label">Tanggal Lahir</label>
                                     <input type="date" class="form-control" id="birth_date" name="birth_date" required>
                                 </div>
-
+                
                                 <div class="mb-3">
                                     <label for="gender" class="form-label">Jenis Kelamin</label>
                                     <select class="form-select" id="gender" name="gender" required>
@@ -203,12 +258,12 @@
                                         <option value="Perempuan">Perempuan</option>
                                     </select>
                                 </div>
-
+                
                                 <div class="mb-3">
                                     <label for="address" class="form-label">Alamat</label>
                                     <textarea class="form-control" id="address" name="address" required></textarea>
                                 </div>
-
+                
                                 <div class="mb-3">
                                     <label for="photo" class="form-label">Unggah Foto</label>
                                     <div class="input-group">
@@ -220,19 +275,70 @@
                                         <img id="imagePreview" src="" alt="Pratinjau Gambar" class="img-thumbnail" style="display: none; max-width: 200px;">
                                     </div>
                                 </div>
-            
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                
+                            </div>
+                            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+                                <input type="hidden" class="form-control" id="tree_id" name="tree_id" value="{{ $tree->id }}" required>
+                                                
+                                <div class="mb-3">
+                                    <label for="partner_name" class="form-label">Nama Pasangan</label>
+                                    <input type="text" class="form-control" id="partner_name" name="partner_name">
                                 </div>
-                            </form>
+                
+                                <div class="mb-3">
+                                    <label for="urutan" class="form-label">Anak Ke</label>
+                                    <select class="form-select" id="urutan" name="urutan">
+                                        <option value="" disabled selected>Anak Ke</option>
+                                        <option value="1">Pertama</option>
+                                        <option value="2">Kedua</option>
+                                        <option value="3">Ketiga</option>
+                                        <option value="4">Keempat</option>
+                                        <option value="5">Kelima</option>
+                                        <option value="6">Keenam</option>
+                                        <option value="7">Ketujuh</option>
+                                        <option value="8">Kedelapan</option>
+                                        <option value="9">Kesembilan</option>
+                                        <option value="10">Kesepuluh</option>
+                                    </select>
+                                </div>
+                
+                                <div class="mb-3"> 
+                                    <label for="partner_birth_date" class="form-label">Tanggal Lahir</label>
+                                    <input type="date" class="form-control" id="partner_birth_date" name="partner_birth_date">
+                                </div>
+                
+                                <div class="mb-3">
+                                    <label for="partner_address" class="form-label">Alamat</label>
+                                    <textarea class="form-control" id="partner_address" name="partner_address"></textarea>
+                                </div>
+                
+                                <div class="mb-3">
+                                    <label for="partner_photo" class="form-label">Unggah Foto</label>
+                                    <div class="input-group">
+                                        <input type="file" class="form-control" id="partner_photo" name="partner_photo" accept="image/*" onchange="previewImage2(event)">
+                                        <label class="input-group-text" for="partner_photo">Pilih File</label>
+                                    </div>
+                                    
+                                    <div class="mt-2">
+                                        <img id="imagePreview2" src="" alt="Pratinjau Gambar" class="img-thumbnail" style="display: none; max-width: 200px;">
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
                         </div>
-                    </div>
+                        <div class="modal-footer">
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
                 </div>
             </div>
 
-            <div class="overflow-x-auto mt-3 bg-[#FEEEBD] p-5 rounded-md">
-                <ul class="nav nav-tabs bg-[#FFE594]" id="myTab" role="tablist">
+            <div class="overflow-x-auto mt-3 bg-white p-5 rounded-md">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Anggota Keluarga</button>
                     </li>
@@ -245,8 +351,8 @@
                 </ul>
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-                        <table class="bg-white shadow-md mt-3">
-                            <thead class="bg-[#D54425] ">
+                        <table class="shadow-md mt-3">
+                            <thead class="">
                             <tr class="bg-blue-gray-100 text-gray-700">
                                 <th class="py-3 px-4 text-center text-white border border-orange-300">No</th>
                                 <th class="py-3 px-20 text-center text-white border border-orange-300">Nama Lengkap</th>
@@ -258,14 +364,14 @@
                             </tr>
         
                             @foreach ($tree->familyMembers as $member)
-                            <tr class="border-separate border border-[#CFAD82] bg-[#FFE28B] justify-center align-middle">
+                            <tr class="border-separate border bg-white justify-center align-middle">
                                 <td class="py-3 px-4 text-center border border-[#CFAD82]">{{ $loop -> iteration }}</td>
                                 <td class="py-3 px-4 border border-[#CFAD82] text-center wrap-text">{{$member->name}}</td>
                                 <td class="py-3 px-4 border border-[#CFAD82] text-center">{{ $member->birth_date }}</td>
                                 <td class="py-3 px-4 border border-[#CFAD82] text-center">{{ $member->gender }}</td>
                                 <td class="py-3 px-4 border border-[#CFAD82] text-center wrap-text">{{ $member->address }}</td>
-                                <td class="py-3 px-4 border border-[#CFAD82] text-center ">{{ $member->parent ? $member->parent->name : 'Tidak Ada' }}</td>
-                                <td class="py-3 px-8 border border-[#CFAD82] flex gap-3">
+                                <td class="py-3 px-4 border border-[#CFAD82] text-center ">{{ $member->parent ? $member->parent->name : 'Belum Diketahui' }}</td>
+                                <td class="py-4 px-4 border border-[#CFAD82] flex gap-3">
         
                                     <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#DetailModal{{ $member->id }}">
                                         Detail
@@ -275,13 +381,12 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="DetailModalLabel">Detail Anggota Keluarga</h5>
+                                                    <h5 class="modal-title" id="DetailModalLabel">Detail</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
-                                                <div class="modal-body">
+                                                <div class="modal-body flex items-center">
                                                     @if($member->photo)
-                                                        <p><strong>Foto:</strong></p>
-                                                        <img src="{{ asset('storage/' . $member->photo) }}" alt="Foto Anggota" class="img-fluid" style="max-width: 100%; height: auto;">
+                                                        <img src="{{ asset('storage/' . $member->photo) }}" alt="Foto Anggota" class="img-fluid" style="width: 300px; height: 300px; object-fit: cover">
                                                     @else
                                                         <p><strong>Foto:</strong> Tidak ada foto</p>
                                                     @endif
@@ -304,80 +409,153 @@
                                     <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#EditModal{{ $member->id }}">
                                          Edit
                                     </button>
-                             
-                                     <!-- Modal Edit -->
-                                     <div class="modal fade" id="EditModal{{ $member->id }}"  tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
-                                         <div class="modal-dialog">
-                                             <div class="modal-content">
-                                                 <div class="modal-header">
-                                                     <h5 class="modal-title">Edit Data</h5>
-                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                 </div>
-                                                 <div class="modal-body">
-                                                     <!-- Form untuk Update ke Laravel -->
-                                                     <form action="{{ route('family_members.update', $member->id) }}" method="POST" enctype="multipart/form-data">
-                                                         @csrf
-                                                         @method('PUT')
-                             
-                                                         <div class="mb-3">
-                                                             <label for="name" class="form-label">Nama</label>
-                                                             <input type="text" class="form-control" id="name" name="name" value="{{ $member->name }}" required>
-                                                         </div>
-                             
-                                                         <div class="mb-3">
-                                                             <label for="parent_id" class="form-label">Pilih Orang Tua</label>
-                                                             <select class="form-control" id="parent_id" name="parent_id">
-                                                                 <option value="" selected>Tidak Ada</option>
-                                                                 @foreach ($tree->familyMembers as $parent)
-                                                                     <option value="{{ $parent->id }}" {{ $member->parent_id == $parent->id ? 'selected' : '' }}>
-                                                                         {{ $parent->name }}
-                                                                     </option>
-                                                                 @endforeach
-                                                             </select>
-                                                         </div>
-                             
-                                                         <div class="mb-3"> 
-                                                             <label for="birth_date" class="form-label">Tanggal Lahir</label>
-                                                             <input type="date" class="form-control" id="birth_date" name="birth_date" value="{{ $member->birth_date }}" required>
-                                                         </div>
-                             
-                                                         <div class="mb-3">
-                                                             <label for="gender" class="form-label">Jenis Kelamin</label>
-                                                             <select class="form-select" id="gender" name="gender" required>
-                                                                 <option value="Laki-Laki" {{ $member->gender == 'Laki-Laki' ? 'selected' : '' }}>Laki-Laki</option>
-                                                                 <option value="Perempuan" {{ $member->gender == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
-                                                             </select>
-                                                         </div>
-                             
-                                                         <div class="mb-3">
-                                                             <label for="address" class="form-label">Alamat</label>
-                                                             <textarea class="form-control" id="address" name="address" required>{{ $member->address }}</textarea>
-                                                         </div>
-        
-                                                         <!-- Input untuk Upload Gambar -->
-                                                         <div class="form-group mb-3">
-                                                            <label for="photo">Foto</label>
-                                                            <input type="file" name="photo" id="photo" class="form-control">
-                                                            @if($member->photo)
-                                                            <p><strong>Foto:</strong></p>
-                                                            <img src="{{ $member->photo ? asset('storage/' . $member->photo) : asset('storage/photos/family_photos/'. $member->photo) }}" alt="Foto Anggota" class="img-fluid" style="max-width: 100%; height: auto;">
-                                                            
-                                                            @else
-                                                                <p><strong>Foto:</strong> Tidak ada foto</p>
-                                                            @endif
+
+                                    <div class="modal fade" id="EditModal{{ $member->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Data Anggota Keluarga</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <!-- Tab Navigation -->
+                                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link active" id="pills-home-tab-2" data-bs-toggle="pill" data-bs-target="#pills-home-2" type="button" role="tab" aria-controls="pills-home-2" aria-selected="true">Data Pribadi</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link" id="pills-profile-tab-2" data-bs-toggle="pill" data-bs-target="#pills-profile-2" type="button" role="tab" aria-controls="pills-profile-2" aria-selected="false">Data Pasangan</button>
+                                                        </li>
+                                                    </ul>
+                                    
+                                                    <!-- Form -->
+                                                    <form action="{{ route('family_members.update', $member->id) }}" method="POST" enctype="multipart/form-data">
+                                                        @csrf
+                                                        @method('PUT')
+                                    
+                                                        <!-- Tab Content -->
+                                                        <div class="tab-content" id="pills-tabContent-2">
+                                                            <!-- Tab 1: Data Pribadi -->
+                                                            <div class="tab-pane fade show active" id="pills-home-2" role="tabpanel" aria-labelledby="pills-home-tab-2" tabindex="0">
+                                                                <!-- Konten Data Pribadi -->
+                                                                <input type="hidden" class="form-control" id="tree_id" name="tree_id" value="{{ $tree->id }}" required>
+                                    
+                                                                <div class="mb-3">
+                                                                    <label for="name" class="form-label">Nama</label>
+                                                                    <input type="text" class="form-control" id="name" name="name" value="{{ $member->name }}" required>
+                                                                </div>
+                                    
+                                                                <div class="mb-3">
+                                                                    <label for="parent_id" class="form-label">Pilih Orang Tua</label>
+                                                                    <select class="form-control" id="parent_id" name="parent_id">
+                                                                        <option value="" selected>Tidak Ada</option>
+                                                                        @foreach ($tree->familyMembers as $parent)
+                                                                            <option value="{{ $parent->id }}" {{ $member->parent_id == $parent->id ? 'selected' : '' }}>
+                                                                                {{ $parent->name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                    
+                                                                <div class="mb-3">
+                                                                    <div class="flex items-center mb-4">
+                                                                        <input id="has-partner-checkbox" name="has-partner-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500" onchange="toggleTab2()">
+                                                                        <label for="has-partner-checkbox" class="ms-2 text-sm font-normal">Memiliki Pasangan</label>
+                                                                    </div>
+                                                                </div>
+                                    
+                                                                <div class="mb-3">
+                                                                    <label for="birth_date" class="form-label">Tanggal Lahir</label>
+                                                                    <input type="date" class="form-control" id="birth_date" name="birth_date" value="{{ $member->birth_date }}" required>
+                                                                </div>
+                                    
+                                                                <div class="mb-3">
+                                                                    <label for="urutan" class="form-label">Anak Ke</label>
+                                                                    <select class="form-select" id="urutan" name="urutan" required>
+                                                                        <option value="" disabled selected>Anak Ke</option>
+                                                                        @for ($i = 1; $i <= 10; $i++)
+                                                                            <option value="{{ $i }}" {{ $member->urutan == $i ? 'selected' : '' }}>Ke-{{ $i }}</option>
+                                                                        @endfor
+                                                                    </select>
+                                                                </div>
+                                    
+                                                                <div class="mb-3">
+                                                                    <label for="gender" class="form-label">Jenis Kelamin</label>
+                                                                    <select class="form-select" id="gender" name="gender" required>
+                                                                        <option value="Laki-Laki" {{ $member->gender == 'Laki-Laki' ? 'selected' : '' }}>Laki-Laki</option>
+                                                                        <option value="Perempuan" {{ $member->gender == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                                                    </select>
+                                                                </div>
+                                    
+                                                                <div class="mb-3">
+                                                                    <label for="address" class="form-label">Alamat</label>
+                                                                    <textarea class="form-control" id="address" name="address" required>{{ $member->address }}</textarea>
+                                                                </div>
+                                    
+                                                                <div class="mb-3">
+                                                                    <label for="photo" class="form-label">Unggah Foto</label>
+                                                                    <div class="input-group">
+                                                                        <input type="file" class="form-control" id="photo" name="photo" accept="image/*" onchange="previewImage3(event)">
+                                                                    </div>
+                                                                    
+                                                                    <!-- Tampilkan foto yang sudah ada -->
+                                                                    @if($member->photo)
+                                                                        <div class="mt-2">
+                                                                            <img id="existingPhoto" src="{{ asset('storage/' . $member->photo) }}" alt="Foto Anggota" class="img-thumbnail" style="max-width: 200px;">
+                                                                        </div>
+                                                                    @endif
+                                                                
+                                                                    <!-- Tampilkan pratinjau gambar baru -->
+                                                                    <div class="mt-2">
+                                                                        <img id="imagePreview3" src="" alt="Pratinjau Gambar" class="img-thumbnail" style="display: none; max-width: 200px;">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                    
+                                                            <!-- Tab 2: Data Pasangan -->
+                                                            <div class="tab-pane fade" id="pills-profile-2" role="tabpanel" aria-labelledby="pills-profile-tab-2" tabindex="0">
+                                                                <!-- Konten Data Pasangan -->
+                                                                <input type="hidden" class="form-control" id="tree_id" name="tree_id" value="{{ $tree->id }}" required>
+                                    
+                                                                <div class="mb-3">
+                                                                    <label for="partner_name" class="form-label">Nama Pasangan</label>
+                                                                    <input type="text" class="form-control" id="partner_name" name="partner_name" value="{{ $member->partner_name }}">
+                                                                </div>
+                                    
+                                                                <div class="mb-3">
+                                                                    <label for="partner_birth_date" class="form-label">Tanggal Lahir</label>
+                                                                    <input type="date" class="form-control" id="partner_birth_date" name="partner_birth_date" value="{{ $member->partner_birth_date }}">
+                                                                </div>
+                                    
+                                                                <div class="mb-3">
+                                                                    <label for="partner_address" class="form-label">Alamat</label>
+                                                                    <textarea class="form-control" id="partner_address" name="partner_address">{{ $member->partner_address }}</textarea>
+                                                                </div>
+                                    
+                                                                <div class="mb-3">
+                                                                    <label for="partner_photo" class="form-label">Unggah Foto</label>
+                                                                    <div class="input-group">
+                                                                        <input type="file" class="form-control" id="partner_photo" name="partner_photo" accept="image/*" onchange="previewImage2(event)">
+                                                                        <label class="input-group-text" for="partner_photo">Pilih File</label>
+                                                                    </div>
+                                                                    
+                                                                    <div class="mt-2">
+                                                                        <img id="imagePreview2" src="" alt="Pratinjau Gambar" class="img-thumbnail" style="display: none; max-width: 200px;">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    
-                             
-                                                         <div class="modal-footer">
-                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                             <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                                                         </div>
-                                                     </form>
-                                                 </div>
-                                             </div>
-                                         </div>
-                                     </div>
-        
+                                    
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                            <button type="submit" class="btn btn-primary">Simpan</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                     
                                      <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#DeleteModal{{ $member->id }}">
                                         Hapus
                                     </button>
@@ -454,5 +632,65 @@
                 preview.style.display = "none";
             }
         }
-        </script>
+
+        function previewImage2(event) {
+            const input = event.target;
+            const preview = document.getElementById("imagePreview2");
+        
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                };
+        
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = "";
+                preview.style.display = "none";
+            }
+        }
+        
+        function previewImage3(event) {
+        const input = event.target;
+        const preview = document.getElementById("imagePreview3");
+        const existingPhoto = document.getElementById("existingPhoto");
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = "block";
+
+                // Sembunyikan gambar lama jika ada
+                if (existingPhoto) {
+                    existingPhoto.style.display = "none";
+                }
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = "";
+            preview.style.display = "none";
+
+            // Tampilkan kembali gambar lama jika tidak ada file baru yang dipilih
+            if (existingPhoto) {
+                existingPhoto.style.display = "block";
+            }
+        }
+    }
+
+        function toggleTab2Edit() {
+        const hasPartnerCheckbox = document.getElementById('has-partner-checkbox-edit');
+        const partnerTab = document.getElementById('pills-profile-tab');
+        if (hasPartnerCheckbox.checked) {
+            partnerTab.classList.remove('disabled');
+        } else {
+            partnerTab.classList.add('disabled');
+        }
+    }
+
+    </script>
 </x-app-layout>

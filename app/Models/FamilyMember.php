@@ -13,7 +13,21 @@ class FamilyMember extends Model
 
     protected $table = 'family_members';
 
-    protected $fillable = ['tree_id', 'name', 'birth_date', 'gender', 'address', 'parent_id', 'photo'];
+    protected $fillable = [
+        'name',
+        'birth_date',
+        'gender',
+        'address',
+        'tree_id',
+        'parent_id',
+        'photo',
+        // [partner]
+        'partner_name', 
+        'partner_birth_date', 
+        'partner_gender', 
+        'partner_address', 
+        'partner_photo', 
+    ];
 
     public function tree()
     {

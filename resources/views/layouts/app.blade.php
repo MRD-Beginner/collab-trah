@@ -16,7 +16,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/table.css','resources/css/pop-up.css'])
         <!-- Styles -->
         @livewireStyles
         {{-- @notifyCss --}}
@@ -24,12 +24,12 @@
     <body class="font-sans antialiased">
         <x-banner />
 
-        <div class="min-h-screen bg-[#FDF6E0]">
+        <div class="min-h-screen bg-[#f4f6f9]">
             @livewire('navigation-menu')
 
             <!-- Page Heading -->
             @if (isset($header))
-                <header class="bg-yellow-100 shadow">
+                <header class="bg-[#f4f6f9] shadow">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
@@ -42,6 +42,9 @@
             </main>
         </div>
 
+        {{-- sampe anuin pop up modal tambahan --}}
+
+        <x-footer/>
         @notifyJs
         @stack('modals')
         @livewireScripts

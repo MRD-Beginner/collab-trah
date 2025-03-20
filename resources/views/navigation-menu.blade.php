@@ -1,4 +1,5 @@
-<nav x-data="{ open: false }" class="bg-[#FEEEBD] border-b border-gray-100">
+<nav x-data="{ open: false }" class="bg-white border-b border-gray-100" style="box-shadow: 0px 0px 10px 1px #afafaf;">
+
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
