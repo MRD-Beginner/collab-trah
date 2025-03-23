@@ -10,21 +10,36 @@ class TreeController extends Controller
 {
     public function index()
     {
+        // done guard for admin and user
         $totalUsers = User::count();
         $totalFamilyTrees = FamilyTree::count();
         $users = User::pluck('name');
-        $familyTrees = FamilyTree::all(); 
-        $namaUser = auth()->user()->name; // Ambil nama user yang sedang login
+        $namaUser = auth()->user()->name;
+        $userRole = auth()->user()->role;
 
-        notify()->success('Welcome Back Admin', 'Hello 😎');
-        
-        // Tambahkan $namaUser ke dalam compact
-        return view('admin.dashboard', compact('totalUsers', 'users', 'totalFamilyTrees', 'familyTrees', 'namaUser'));
+        if ($userRole === 'Admin') {
+            $familyTrees = FamilyTree::all();
+            notify()->success('Welcome Back Admin', 'Hello 😎');
+        } else {
+            $familyTrees = FamilyTree::where('created_by', $namaUser)->get();
+            // notify()->success('Welcome Back ' . $namaUser, 'Hello 😊');
+        }
+
+        return view('admin.dashboard', compact('totalUsers', 'users', 'totalFamilyTrees', 'familyTrees', 'namaUser', 'userRole'));
     }
     public function data()
     {
-        $trees = FamilyTree::all(); // Ambil semua data pohon
+        // done guard for admin and user
         $namaUser = auth()->user()->name;
+        $userRole = auth()->user()->role;
+
+        if ($userRole === 'Admin') {
+            $trees = FamilyTree::all();
+            notify()->success('Welcome Back Admin', 'Hello 😎');
+        } else {
+            $trees = FamilyTree::where('created_by', $namaUser)->get();
+            notify()->success('Welcome Back ' . $namaUser, 'Hello 😊');
+        }
         return view('admin.data', compact('trees', 'namaUser'));
     }
 
@@ -62,6 +77,7 @@ class TreeController extends Controller
 
     public function update(Request $request, $tree_id)
     {
+        
         $tree = FamilyTree::findOrFail($tree_id);
         $tree->update([
             'tree_name' => $request->tree_name,
@@ -73,10 +89,28 @@ class TreeController extends Controller
 
     public function detail($tree_id)
     {
-        // Ambil tree beserta familyMembers dan children
+        
         $tree = FamilyTree::with('familyMembers.children')->findOrFail($tree_id);
-        // Ambil root members (familyMembers tanpa parent_id)
+       
         $rootMembers = $tree->familyMembers->whereNull('parent_id');
         return view('admin.detail', compact('tree', 'rootMembers'));
+    }
+
+    public function secure(){
+        $namaUser = auth()->user()->name;
+        $userRole = auth()->user()->role;
+
+        if ($userRole === 'Admin') {
+            notify()->success('Welcome Back Admin', 'Hello 😎');
+            return view('admin.secure');
+        } else {
+            notify()->success('Gagal', 'Anda tidak memiliki akses ini');
+            return redirect()->back()->with('success');
+        }   
+    }
+
+    public function notFound()
+    {
+        return response()->view('errors.404', [], 404);
     }
 }

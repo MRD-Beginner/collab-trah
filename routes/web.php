@@ -16,6 +16,9 @@ Route::middleware([
     Route::get('/dashboard', [TreeController::class, 'index'])
     ->name('dashboard');
 
+    Route::get('/secure', [TreeController::class, 'secure'])
+    ->name('secure');
+
     Route::get('/data', [TreeController::class, 'data'])
     ->name('data');
 
@@ -40,7 +43,8 @@ Route::middleware([
 
     Route::get('/family-tree/{id}', [FamilyController::class, 'showFamilyTree']);
 
-    Route::get('/copy-url/{tree_id}', [FamilyController::class, 'copyToClipboard'])->name('copy.url');
+    Route::fallback([TreeController::class, 'notFound']);
+
 });
 
 

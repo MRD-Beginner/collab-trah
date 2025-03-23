@@ -22,7 +22,8 @@
     </style>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight sm:mx-5 md:mx-0">
-            {{ __('Dashboard Admin') }}
+            {{-- {{ __('Dashboard Admin') }} --}}
+            {{ __('Dashboard ' . ucfirst(auth()->user()->role)) }}
         </h2>
     </x-slot>
     
@@ -130,6 +131,7 @@
             </thead>
             <tbody class="text-blue-gray-900">
             @foreach ($familyTrees as $tree)
+            {{-- @foreach(auth()->user()->role === 'admin' ? $familyTrees : $UserfamilyTrees as $tree) --}}
             <tr class="border-separate border border-[#CFAD82]">
                 <td class="py-3 px-4 text-center border border-[#CFAD82]">{{ $loop -> iteration }}</td>
                 <td class="py-3 px-4 border border-[#CFAD82] text-center w-60">{{$tree->tree_name}}</td>

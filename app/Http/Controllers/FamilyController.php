@@ -10,14 +10,12 @@ use Illuminate\Support\Facades\Log;
 
 class FamilyController extends Controller
 {
-
     public function store(Request $request)
     {
-        // Validasi input
         $request->validate([
             'tree_id' => 'required',
             'name' => 'required|string|max:50',
-            'birth_date' => 'required|date',
+            'birth_date' => 'nullable|date',
             'gender' => 'required|string|in:Laki-Laki,Perempuan',
             'address' => 'nullable|string|max:60',
             'parent_id' => 'nullable|exists:family_members,id',
@@ -25,8 +23,8 @@ class FamilyController extends Controller
             'urutan' => 'required|integer',
             // Validasi untuk partner (hanya jika checkbox dicentang)
             'partner_name' => $request->has('has-partner-checkbox') ? 'required|string|max:50' : 'nullable',
-            'partner_birth_date' => $request->has('has-partner-checkbox') ? 'required|date' : 'nullable',
-            'partner_gender' => 'nullable', // Tidak perlu validasi karena akan diisi otomatis
+            'partner_birth_date' => $request->has('has-partner-checkbox') ? 'nullable|date' : 'nullable',
+            'partner_gender' => 'nullable',
             'partner_address' => $request->has('has-partner-checkbox') ? 'nullable|string|max:60' : 'nullable',
             'partner_photo' => $request->has('has-partner-checkbox') ? 'nullable|image|mimes:jpg,png,jpeg|max:2048' : 'nullable',
         ]);
@@ -66,10 +64,8 @@ class FamilyController extends Controller
             'partner_photo' => $partnerPhotoPath,
         ];
 
-        // Simpan data ke database
         FamilyMember::create($data);
 
-        // Notifikasi sukses
         notify()->success('Data Berhasil Ditambahkan', 'Data Added');
         return redirect()->back()->with('success', 'Data berhasil disimpan!');
     }
@@ -78,45 +74,12 @@ class FamilyController extends Controller
         $member = FamilyMember::findOrFail($id);
         return view('family_members.edit', compact('member'));
     }
-// {
-//     $request->validate([
-//         'name' => 'required|string|max:50',
-//         'birth_date' => 'required|date',
-//         'gender' => 'required|string|in:Laki-Laki,Perempuan',
-//         'address' => 'nullable|string|max:100',
-//         'photo' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
-//     ]);
-
-//     $member = FamilyMember::findOrFail($id);
-
-//     if ($request->hasFile('photo')) {
-//         if ($member->photo) {
-//             Storage::delete('public/photos/family_photos/' . $member->photo);
-//         }
-//         $photoPath = $request->file('photo')->store('photos/family_photos', 'public');
-//     } else {
-//         $photoPath = $member->photo;
-//     }
-
-//     $member->update([
-//         'name' => $request->name,
-//         'birth_date' => $request->birth_date,
-//         'gender' => $request->gender,
-//         'address' => $request->address,
-//         'parent_id' => $request->parent_id,
-//         'photo' => $photoPath, // Menyimpan path lengkap (misalnya: photos/family_photos/nama_file.jpg)
-//     ]);
-//     notify()->success('Data Berhasil Diupdate','Update Data');
-//     return redirect()->back()->with('success', 'Data berhasil diperbarui!');
-// }
-
-
     public function update(Request $request, $id)
     {
         // Validasi input
         $request->validate([
             'name' => 'required|string|max:50',
-            'birth_date' => 'required|date',
+            'birth_date' => 'nullable|date',
             'gender' => 'required|string|in:Laki-Laki,Perempuan',
             'address' => 'nullable|string|max:100',
             'photo' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
@@ -128,7 +91,6 @@ class FamilyController extends Controller
             'partner_photo' => $request->has('has-partner-checkbox') ? 'nullable|image|mimes:jpg,png,jpeg|max:2048' : 'nullable',
         ]);
 
-        // Temukan anggota keluarga berdasarkan ID
         $member = FamilyMember::findOrFail($id);
 
         // Handle foto anggota keluarga
