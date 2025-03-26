@@ -338,7 +338,7 @@
             </div>
 
             <div class="overflow-x-auto mt-3 bg-white p-5 rounded-md">
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                {{-- <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Anggota Keluarga</button>
                     </li>
@@ -348,9 +348,23 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Hubungan Keluarga</button>
                     </li>
+                </ul> --}}
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {{ !request()->has('compare') ? 'active' : '' }}" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button">Anggota Keluarga</button>
+                        <!-- <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Anggota Keluarga</button> -->
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button">Pohon Keluarga</button>
+                        <!-- <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Pohon Keluarga</button> -->
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {{ request()->has('compare') ? 'active' : '' }}" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button">Hubungan Keluarga</button>
+                        <!-- <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Hubungan Keluarga</button> -->
+                    </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                    <div class="tab-pane fade {{ !request()->has('compare') ? 'show active' : '' }}" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab">
                         <table class="shadow-md mt-3">
                             <thead class="">
                             <tr class="bg-blue-gray-100 text-gray-700">
@@ -605,8 +619,100 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
-                        tab 3
+                    <div class="tab-pane fade {{ request()->has('compare') ? 'show active' : '' }}" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab">
+                        {{-- comapration --}}
+                        <div class="flex mt-10">
+                            <div class="container sm:mx-12 md:mx-28">
+                                
+                                @if(session('error'))
+                                    <div class="alert alert-danger">
+                                        {{ session('error') }}
+                                    </div>
+                                @endif
+
+                                <div class="bg-[#FEEEBD] p-5 rounded-md">
+                                    <h3 class="text-lg font-semibold mb-4">Pilih Anggota Keluarga untuk Dibandingkan</h3>
+
+                                    <form action="{{ route('trees.show', $tree_id) }}" method="GET">
+                                    @csrf
+                                        <input type="hidden" name="tree_id" value="{{ $tree_id }}">
+                                        <input type="hidden" name="compare" value="true">
+
+                                        <div class="mb-3">
+                                            <label for="person1" class="form-label">Pilih Anggota Keluarga 1:</label>
+                                            <select name="name1" id="person1" class="form-control" required>
+                                                <option value="">-- Pilih --</option>
+                                                @foreach ($members as $member)
+                                                    <option value="{{ $member->name }}" {{ old('name1', $person1->name ?? '') == $member->name ? 'selected' : '' }}>
+                                                        {{ $member->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="person2" class="form-label">Pilih Anggota Keluarga 2:</label>
+                                            <select name="name2" id="person2" class="form-control" required>
+                                                <option value="">-- Pilih --</option>
+                                                @foreach ($members as $member)
+                                                    <option value="{{ $member->name }}" {{ old('name2', $person2->name ?? '') == $member->name ? 'selected' : '' }}>
+                                                        {{ $member->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700">Bandingkan</button>
+                                        <button type="button" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700" onclick="resetForm();">Reset</button>
+                                    </form>
+
+                                    @if(isset($relationshipDetails))
+                                        <div id="relationship-details" class="bg-white shadow-md p-5 rounded-md mt-5">
+                                            <h3 class="text-lg font-semibold mb-2">Hasil Perbandingan</h3>
+
+                                            @if(is_array($relationshipDetails))
+                                                <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
+                                                    {{ $relationshipDetails['relation'] }}
+                                                </div>
+
+                                                @if(!empty($relationshipDetails['detailedPath']))
+                                                    <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
+                                                        <strong>Jalur Hubungan Keluarga:</strong>
+                                                        <ul class="list-group mt-2">
+                                                            @foreach ($relationshipDetails['detailedPath'] as $detail)
+                                                                <li class="list-group-item">{{ $detail }}</li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                @endif
+
+                                            @else
+                                                <div class="alert alert-warning">
+                                                    {{ $relationshipDetails }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
+
+                                    @if(isset($relationshipDetails))
+                                    <script>
+                                        window.onload = () => {
+                                            document.getElementById('relationship-details')?.scrollIntoView({ behavior: 'smooth' });
+                                        }
+                                    </script>
+                                    @endif
+
+                                    <script>
+                                        function resetForm() {
+                                            document.querySelector("form").reset();
+                                            document.querySelector("#person1").selectedIndex = 0;
+                                            document.querySelector("#person2").selectedIndex = 0;
+                                            document.getElementById("relationship-details").innerHTML = '';  // Clear results
+                                        }
+                                    </script> 
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

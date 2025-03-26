@@ -1,14 +1,13 @@
 <x-guest-layout>
     <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+        <div class="text-center">
+            <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-5xl">Welcome</h1>
+        </div>
 
         <x-validation-errors class="mb-4" />
 
         <form method="POST" action="{{ route('register') }}">
             @csrf
-
             <div>
                 <x-label for="name" value="{{ __('Name') }}" />
                 <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
@@ -46,15 +45,26 @@
                 </div>
             @endif
 
-            <div class="flex items-center justify-end mt-4">
+            <x-button class="mt-4">
+                {{ __('Register') }}
+            </x-button>
+
+            <div class="flex items-center justify-end mt-2">
                 <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
                     {{ __('Already registered?') }}
-                </a>
-
-                <x-button class="ms-4">
-                    {{ __('Register') }}
-                </x-button>
+                </a>      
             </div>
         </form>
+
+        <div class="flex justify-center items-center text-gray-700 text-sm mt-4 space-x-2">
+            <div class="flex-column items-center">
+                <p class="m-0">Dikembangkan Oleh :</p>
+            </div>
+        </div>
+        <div class="flex justify-center text-sm gap-1">
+            <a href="https://github.com/MRD-Beginner" class="text-gray-800 font-semibold underline hover:no-underline">Muhammad Rizki Dalfi </a>
+            <p> & </p>
+            <a href="https://github.com/dwinurindahsari" class="text-gray-800 font-semibold underline hover:no-underline">Dwi Nur Indah Sari</a>
+        </div>
     </x-authentication-card>
 </x-guest-layout>

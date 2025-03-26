@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AlgorithmController;
 use App\Http\Controllers\FamilyController;
 use App\Http\Controllers\TreeController;
 use Illuminate\Support\Facades\Route;
@@ -44,6 +45,8 @@ Route::middleware([
     Route::get('/family-tree/{id}', [FamilyController::class, 'showFamilyTree']);
 
     Route::fallback([TreeController::class, 'notFound']);
+
+    Route::post('/family/compare', [AlgorithmController::class, 'compare'])->name('family.compare');
 
 });
 

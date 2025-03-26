@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\FamilyTree;
 use App\Models\User;
+use App\Http\Controllers\AlgorithmController;
+use App\Models\FamilyMember;
 use Illuminate\Http\Request;
 
 class TreeController extends Controller
@@ -87,13 +89,35 @@ class TreeController extends Controller
         return redirect()->route('data');
     }
 
-    public function detail($tree_id)
+    public function detail($id, Request $request)
     {
-        
-        $tree = FamilyTree::with('familyMembers.children')->findOrFail($tree_id);
+        $tree = FamilyTree::with('familyMembers')->findOrFail($id);
        
-        $rootMembers = $tree->familyMembers->whereNull('parent_id');
-        return view('admin.detail', compact('tree', 'rootMembers'));
+        $members = $tree->familyMembers;
+        $tree_id = $id;
+        $rootMembers = $members->whereNull('parent_id');
+    
+        $person1 = null;
+        $person2 = null;
+        $relationshipDetails = null;
+    
+        if ($request->has('compare') && $request->filled(['name1', 'name2'])) {
+            $person1 = FamilyMember::where('name', $request->name1)->where('tree_id', $tree_id)->first();
+            $person2 = FamilyMember::where('name', $request->name2)->where('tree_id', $tree_id)->first();
+    
+            if ($person1 && $person2) {
+                $path = [];
+                $found = (new AlgorithmController())->dfs($person1, $person2->id, [], $path);
+                $relationshipDetails = $found
+                    ? (new AlgorithmController())->formatRelationship($path, $person1->name, $person2->name)
+                    : 'Tidak ada hubungan yang ditemukan.';
+            }
+        }
+    
+        return view('admin.detail', compact(
+            'tree', 'members', 'tree_id', 'rootMembers',
+            'person1', 'person2', 'relationshipDetails'
+        ));
     }
 
     public function secure(){
