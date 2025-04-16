@@ -12,6 +12,11 @@ class TreeController extends Controller
 {
     public function index()
     {
+        // Cek apakah user sudah login
+        if (!auth()->check()) {
+            return redirect()->route('login'); // Ganti 'login' dengan nama route login Anda
+        }
+
         // done guard for admin and user
         $totalUsers = User::count();
         $totalFamilyTrees = FamilyTree::count();
@@ -29,6 +34,7 @@ class TreeController extends Controller
 
         return view('admin.dashboard', compact('totalUsers', 'users', 'totalFamilyTrees', 'familyTrees', 'namaUser', 'userRole'));
     }
+
     public function data()
     {
         // done guard for admin and user
@@ -112,6 +118,13 @@ class TreeController extends Controller
                     ? (new AlgorithmController())->formatRelationship($path, $person1->name, $person2->name)
                     : 'Tidak ada hubungan yang ditemukan.';
             }
+        }
+
+        if (!auth()->check()) {
+            return view('admin.detail', compact(
+                'tree', 'members', 'tree_id', 'rootMembers',
+                'person1', 'person2', 'relationshipDetails'
+            ));
         }
     
         return view('admin.detail', compact(

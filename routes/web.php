@@ -2,18 +2,20 @@
 
 use App\Http\Controllers\AlgorithmController;
 use App\Http\Controllers\FamilyController;
+use App\Http\Controllers\GuestController;
 use App\Http\Controllers\TreeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
-])->group(function () {
+    ])->group(function () {
+
+    Route::get('/', [TreeController::class, 'index'])
+    ->name('dashboard')->middleware(['auth']);
+    
     Route::get('/dashboard', [TreeController::class, 'index'])
     ->name('dashboard');
 
@@ -49,5 +51,9 @@ Route::middleware([
     Route::post('/family/compare', [AlgorithmController::class, 'compare'])->name('family.compare');
 
 });
+
+Route::get('/', [GuestController::class, 'index'])->name('dashboard')->middleware('guest');
+
+Route::get('/guest/detail/{id}', [GuestController::class, 'detail'])->name('guest.show')->middleware('guest');
 
 

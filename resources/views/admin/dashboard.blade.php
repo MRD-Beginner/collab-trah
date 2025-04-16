@@ -18,8 +18,50 @@
             border-right: none !important;
             border-bottom: none !important;
         }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .pagination-container button {
+            margin: 0 0.25rem;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .pagination-container button:hover:not(:disabled) {
+            background-color: #f8f9fa;
+        }
+
+        .pagination-container button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .pagination-container button.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        /* Style untuk filter dropdown */
+        .custom-select {
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+        }
         
     </style>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight sm:mx-5 md:mx-0">
             {{-- {{ __('Dashboard Admin') }} --}}
@@ -114,12 +156,33 @@
         </div>
     </div>
 
-    <div class="container-fluid md:my-3 d-flex justify-content-center">
-        <input type="text" class="form-input rounded-lg border-green-700 col-sm-12 col-md-10 ">
-    </div>
-
     <div class="overflow-x-auto mt-3 mx-36 bg-[#ffffff] p-5 rounded-md">
-        <table class="bg-white shadow-md">
+
+        <div class="p-2 pt-3 my-2 bg-[#f8f9fa]">
+            <h1 class="font-medium">Daftar Silsilah Keluarga</h1>
+            <hr>
+        </div>
+
+        <div class="d-flex justify-content-between mb-3 filter mx-2">
+            <div class="d-flex align-items-center">
+                <div class="dataTables_length input-group" style="width: max-content;">
+                    <label class="pt-2 pr-2" for="lengthMenuDaftarSilsilahKeluarga">Tampilkan</label>
+                    <select id="lengthMenuDaftarSilsilahKeluarga" class="custom-select custom-select-md rounded-3 py-1" style="width: auto">
+                        <option value="5" selected>5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+            </div>
+            <div class="dataTables_filter input-group" style="width: max-content;">
+                <label class="pt-2 pr-2" for="searchFilterDaftarSilsilahKeluarga">Cari</label>
+                <input type="search" class="form-control form-control-md rounded-3 py-1" 
+                       id="searchFilterDaftarSilsilahKeluarga" placeholder="Cari berdasarkan nama trah...">
+            </div>
+        </div>
+
+        <table id="tableDaftarSilsilahKeluarga" class="bg-white shadow-md w-100">
             <thead>
             <tr class="bg-blue-gray-100 text-gray-700">
                 <th class="py-3 px-4 text-center text-white border" scope="col">No</th>
@@ -234,16 +297,187 @@
             @endforeach
         </table>
     </div>
-    {{-- <div class="container mx-28">
-    </div> --}}
+   
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+        const searchInput = document.getElementById('searchFilterDaftarSilsilahKeluarga');
+        const table = document.getElementById('tableDaftarSilsilahKeluarga');
+        const tableRows = document.querySelectorAll('#tableDaftarSilsilahKeluarga tbody tr');
+        const tbody = table.querySelector('tbody');
+
+        const lengthFilter = document.getElementById('lengthMenuDaftarSilsilahKeluarga');
+        const paginationContainer = document.querySelector('.pagination-container') || createPaginationContainer();
+
+        let currentPage = 1;
+        let itemsPerPage = parseInt(lengthFilter.value);
+        let filteredData = [...tableRows];
+
+        renderTable();
+
+        function createPaginationContainer() {
+            const container = document.createElement('div');
+            container.className = 'pagination-container flex justify-center mt-4';
+            table.parentNode.insertBefore(container, table.nextSibling);
+            return container;
+        }
+
+        function renderTable() {
+            // Hitung item yang akan ditampilkan
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedData = filteredData.slice(startIndex, endIndex);
+            
+            // Sembunyikan semua baris terlebih dahulu
+            tableRows.forEach(row => row.style.display = 'none');
+            
+            // Tampilkan hanya data yang sesuai dengan pagination
+            paginatedData.forEach(row => row.style.display = '');
+            
+            // Update pagination
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            paginationContainer.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Tombol Previous
+            const prevButton = document.createElement('button');
+            prevButton.textContent = 'Sebelumnya';
+            prevButton.className = 'px-3 py-1 mx-1 border rounded' + 
+                                (currentPage === 1 ? ' opacity-50 cursor-not-allowed' : ' hover:bg-gray-100');
+            prevButton.disabled = currentPage === 1;
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+            paginationContainer.appendChild(prevButton);
+            
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            // Tombol pertama jika tidak terlihat
+            if (startPage > 1) {
+                const firstButton = document.createElement('button');
+                firstButton.textContent = '1';
+                firstButton.className = 'px-3 py-1 mx-1 border rounded hover:bg-gray-100';
+                firstButton.addEventListener('click', () => {
+                    currentPage = 1;
+                    renderTable();
+                });
+                paginationContainer.appendChild(firstButton);
+                
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.textContent = '...';
+                    ellipsis.className = 'px-3 py-1 mx-1';
+                    paginationContainer.appendChild(ellipsis);
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.className = 'px-3 py-1 mx-1 border rounded' + 
+                                    (currentPage === i ? ' bg-blue-500 text-white' : ' hover:bg-gray-100');
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    renderTable();
+                });
+                paginationContainer.appendChild(pageButton);
+            }
+            
+            // Tombol terakhir jika tidak terlihat
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.textContent = '...';
+                    ellipsis.className = 'px-3 py-1 mx-1';
+                    paginationContainer.appendChild(ellipsis);
+                }
+                
+                const lastButton = document.createElement('button');
+                lastButton.textContent = totalPages;
+                lastButton.className = 'px-3 py-1 mx-1 border rounded hover:bg-gray-100';
+                lastButton.addEventListener('click', () => {
+                    currentPage = totalPages;
+                    renderTable();
+                });
+                paginationContainer.appendChild(lastButton);
+            }
+            
+            // Tombol Next
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Selanjutnya';
+            nextButton.className = 'px-3 py-1 mx-1 border rounded' + 
+                                (currentPage === totalPages ? ' opacity-50 cursor-not-allowed' : ' hover:bg-gray-100');
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+            paginationContainer.appendChild(nextButton);
+        }
+
+        // Event listener untuk filter jumlah data
+        lengthFilter.addEventListener('change', function() {
+            itemsPerPage = parseInt(this.value);
+            currentPage = 1; // Reset ke halaman pertama saat mengubah jumlah item per halaman
+            renderTable();
+        });
+        
+        // Buat elemen untuk pesan tidak ditemukan
+        const noResultsRow = document.createElement('tr');
+        noResultsRow.id = 'no-results-message';
+        noResultsRow.innerHTML = `
+            <td colspan="5" class="py-4 text-center text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="font-medium">Data tidak ditemukan</p>
+                <p class="text-sm">Coba dengan kata kunci yang berbeda</p>
+            </td>
+        `;
+        noResultsRow.style.display = 'none';
+        tbody.appendChild(noResultsRow);
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let hasVisibleRows = false;
+            
+            tableRows.forEach(row => {
+                const treeNameCell = row.querySelector('td:nth-child(2)'); // Kolom tree_name
+                const treeName = treeNameCell.textContent.toLowerCase();
+                const isVisible = treeName.includes(searchTerm);
+                
+                row.style.display = isVisible ? '' : 'none';
+                
+                if (isVisible) {
+                    hasVisibleRows = true;
+                }
+            });
+            
+            // Toggle pesan tidak ditemukan
+            if (searchTerm && !hasVisibleRows) {
+                noResultsRow.style.display = '';
+            } else {
+                noResultsRow.style.display = 'none';
+            }
+        });
+    });
+    </script>
 </x-app-layout>
-
-{{-- todo
--   dahsboard
--   filter data
--   search bar
--   pagination
-
---}}
 
 

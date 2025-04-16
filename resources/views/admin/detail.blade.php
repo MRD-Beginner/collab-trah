@@ -261,7 +261,7 @@
                 
                                 <div class="mb-3">
                                     <label for="address" class="form-label">Alamat</label>
-                                    <textarea class="form-control" id="address" name="address" required></textarea>
+                                    <textarea class="form-control" id="address" name="address" ></textarea>
                                 </div>
                 
                                 <div class="mb-3">
@@ -383,7 +383,7 @@
                                 <td class="py-3 px-4 border border-[#CFAD82] text-center wrap-text">{{$member->name}}</td>
                                 <td class="py-3 px-4 border border-[#CFAD82] text-center">{{ $member->birth_date }}</td>
                                 <td class="py-3 px-4 border border-[#CFAD82] text-center">{{ $member->gender }}</td>
-                                <td class="py-3 px-4 border border-[#CFAD82] text-center wrap-text">{{ $member->address }}</td>
+                                <td class="py-3 px-4 border border-[#CFAD82] text-center wrap-text">{{ $member->address ?: '-' }}</td>
                                 <td class="py-3 px-4 border border-[#CFAD82] text-center ">{{ $member->parent ? $member->parent->name : 'Belum Diketahui' }}</td>
                                 <td class="py-4 px-4 border border-[#CFAD82] flex gap-3">
         
@@ -408,7 +408,7 @@
                                                         <li class="list-group-item"><strong>Nama:</strong> {{ $member->name }}</li>
                                                         <li class="list-group-item"><strong>Tanggal Lahir:</strong> {{ $member->birth_date }}</li>
                                                         <li class="list-group-item"><strong>Jenis Kelamin:</strong> {{ $member->gender }}</li>
-                                                        <li class="list-group-item"><strong>Alamat:</strong> {{ $member->address }}</li>
+                                                        <li class="list-group-item"><strong>Alamat:</strong> {{ $member->address ?: 'Tidak Ada' }}</li>
                                                         <li class="list-group-item"><strong>Orang Tua:</strong> {{ $member->parent ? $member->parent->name : 'Tidak Ada' }}</li>
                                                     </ul>
                                                 </div>
@@ -503,7 +503,7 @@
                                     
                                                                 <div class="mb-3">
                                                                     <label for="address" class="form-label">Alamat</label>
-                                                                    <textarea class="form-control" id="address" name="address" required>{{ $member->address }}</textarea>
+                                                                    <textarea class="form-control" id="address" name="address">{{ $member->address }}</textarea>
                                                                 </div>
                                     
                                                                 <div class="mb-3">

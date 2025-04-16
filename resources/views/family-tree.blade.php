@@ -110,18 +110,6 @@ body {
 
 </style>
 
-{{-- <div class="container">
-    <div class="row">
-        <div class="tree">
-            <ul>
-                @foreach ($rootMembers as $member)
-                    @include('partials.family-member', ['member' => $member])
-                @endforeach
-            </ul>
-        </div>
-    </div>
-</div> --}}
-
 <div class="container">
     <div class="row">
         <h1>Family Tree: {{ $tree->name }}</h1>
